@@ -20,6 +20,12 @@ builder.Services.AddDbContext<DataContext>(opt =>  //specify method 'opt' being 
 // builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
+//Cross-Origin Resource Sharing which is a security mechanism that is enforced by web browsers to protect against unauthorized cross-domain requests.
+// ability to make cross-domain requests from an Angular application to a server that is located on a different domain.
+// By default, web browsers block cross-origin requests initiated by scripts for security reasons. 
+// The server needs to include the appropriate CORS headers in its response to tell web browser that it is safe to allow angular app to access resources on server from different domain..
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Middleware:
@@ -34,6 +40,8 @@ var app = builder.Build();
 
 // app.UseAuthorization();
 
+
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
  // middleware to map controller endpoints i.e. request comes in mapcontroller direct the request to API endpoint.
 app.MapControllers();
 
