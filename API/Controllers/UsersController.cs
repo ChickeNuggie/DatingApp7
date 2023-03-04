@@ -1,18 +1,23 @@
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController]//API route
-    [Route("api/[controller]")]  //API route, GET /api/users (First part of the name of the controller after localhost:5000/ etc.)
+    [Authorize] // allow endpoints to be authenticaed against.
+
+    // [ApiController]//API controller attribute route
+    // [Route("api/[controller]")]  //API route, GET /api/users (First part of the name of the controller after localhost:5000/ etc.)
     //1. Make request to this api controller above,
     //2. UserController class will be created by entity framework
-    public class UsersController : ControllerBase
+
+    // Inheritance from BaseApiController
+    public class UsersController : BaseApiController // every controller needs to derieve from controller based class
     {
         // provide variable/property to use to access outside of constructor.
-        private readonly DataContext _context;
+        private readonly DataContext _context; // not every controller needs a context
 
         //dependency injection
         // allow access to database/sessions and  extract out users using entity framework query (translated into sql query) and return the users' data from API endpoints to the client.
@@ -22,6 +27,7 @@ namespace API.Controllers
             _context = context;
         }
     
+        [AllowAnonymous]
         // Endpoints attirbute to have HTTP method that's being used to make request
         // It gets method that's requesting API users in this case (GET /api/users)
         [HttpGet]

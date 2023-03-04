@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[ApiController] //API route
-[Route("[controller]")] //API route
-public class WeatherForecastController : ControllerBase //MVC , Model and Controller from entity framework. View supplied by angular application
+// [ApiController] //API route
+// [Route("[controller]")] //API route
+
+// Inherit fron BaseApiController
+public class WeatherForecastController : BaseApiController //MVC , Model and Controller from entity framework. View supplied by angular application
 //Older version: View = html returned based on that model, controller does logic and the processing that gives us the data inside the model which is then presented in the view.
 // 
 {
