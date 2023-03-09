@@ -21,7 +21,7 @@
             <div class="btn-group" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
                 <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle text-light text-decoration-none"
                         aria-controls="dropdown-basic"> 
-                        Welcome {{user.username}} <span class="caret"></span>
+                        Welcome {{user.userName}} <span class="caret"></span>
                 </button>
                 <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
                     role="menu" aria-labelledby="button-basic">
@@ -32,6 +32,7 @@
                   <li role="menuitem"><a class="dropdown-item" href="#">Separated link</a>
                   </li>
                 </ul>
+                {{ user | json }}
               </div>
 
             <form *ngIf="!(accountService.currentUser$ | async)" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">
