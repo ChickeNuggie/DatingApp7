@@ -16,6 +16,9 @@
                             <a class="nav-link" routerLink="/messages" routerLinkActive="active">Messages</a>
                         </li>
                     </ng-container>
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/errors" routerLinkActive="active">Errors</a>
+                    </li>
             </ul>
             
             <div class="btn-group" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
@@ -32,7 +35,7 @@
                   <li role="menuitem"><a class="dropdown-item" href="#">Separated link</a>
                   </li>
                 </ul>
-                {{ user | json }}
+                <!-- {{ user | json }} -->
               </div>
 
             <form *ngIf="!(accountService.currentUser$ | async)" #loginForm="ngForm" class="d-flex" (ngSubmit)="login()" autocomplete="off">

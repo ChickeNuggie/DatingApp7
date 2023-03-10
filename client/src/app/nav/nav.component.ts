@@ -35,7 +35,7 @@ export class NavComponent implements OnInit {
     //// use async pipe to subscribe and unsubscribe to data to prevent memory leak.
     this.accountService.login(this.model).subscribe({ 
       next: () => this.router.navigateByUrl('/members'), // direct to member list.
-      error: error => this.toastr.error(error.error) // error if logged in fail
+      //Interceptor handles error exception thus, need not specify or show error in console log.
     })
   }
 

@@ -1,12 +1,6 @@
 //create web application instance which allows to run app
-using System.Text;
-using API.Data;
 using API.Extensions;
-using API.Interfaces;
-using API.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args); 
 
@@ -29,6 +23,8 @@ var app = builder.Build();
 
 // app.UseAuthorization();
 
+// BException Handling app before http request pipeline
+app.UseMiddleware<ExceptionMiddleware> ();
 
 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod()
 .WithOrigins("https://localhost:4200")); // middleware to map controller endpoints i.e. request comes in mapcontroller direct the request to API endpoint.
