@@ -7,6 +7,9 @@ import { AccountService } from '../_services/account.service';
 // It adds static typing, classes, interfaces, and other features to JavaScript, which can help developers catch errors and write more maintainable code
 //API: component is a building block of an application's user interface that encapsulates its own logic, data, and presentation (must have a template associated with it.)
 //component that encapsulates its own logic, data, and presentation using a template
+//used in web applications to define the navigation menu or toolbar, which provides users with a way to navigate between different parts of the application.
+//often used in conjunction with routing to create a seamless navigation experience
+//need to implement a navigation menu or toolbar in your web application
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',

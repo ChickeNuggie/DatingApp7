@@ -1,3 +1,5 @@
+using API.Extensions;
+
 namespace API.Entities
 {
     public class AppUser
@@ -11,5 +13,38 @@ namespace API.Entities
         public byte[] PasswordHash { get; set; }
 
         public byte[] PasswordSalt { get; set; }
+
+        public DateOnly DateOfBirth { get; set; } // create extension API to calculate age of birth of each user
+
+        public string KnwonAs { get; set; }
+
+        public DateTime Created { get; set; } = DateTime.UtcNow;
+
+        public DateTime LastActive { get; set; } = DateTime.UtcNow;
+
+        public string Gender { get; set; }
+
+        public string Introduction { get; set; }
+
+        public string LookingFor { get; set; }
+
+        public string Interests { get; set; }
+
+        public string City { get; set; }
+
+        public string Country { get; set; }
+
+        //if there's entity or a type(Photo) added to another class(AppUser), it is referred to an entity framework - navigation property 
+        public List<Photo> Photos { get; set; } = new ();
+        // Avoid repeated cycle from getting methods between AppUser and Photo class (create seperate DTO class with appropriate properties)
+
+        //Automapper needs to get full entity in order to use this method inside thus, causing big query to still occur and result in returning passwordhash,salt, etc.
+        // public int GetAge() 
+        // {
+        //     return DateOfBirth.CalculateAge();
+        // }
+
     }
+
+
 }

@@ -37,6 +37,11 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>(); // have to provide both interface and its implemented class
             // able to isolate test without implementing other context.
 
+            // makes this classes injectable to user controller
+            services.AddScoped<IUserRepository, UserRepository>(); 
+
+            //Add automapper service on assembly on current domain (single project)
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }
     }

@@ -1,6 +1,11 @@
-//create web application instance which allows to run app
+//create web application instance which allows to run app.
+// main entry point of the program
+//It contains the code to instantiate and run the application, as well as any initialization or configuration code that needs to be executed before the application starts. 
+// Used when whenever you need to define the entry point of your C# application and perform any necessary initialization or configuration.
+using API.Data;
 using API.Extensions;
 using API.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args); 
 
@@ -35,4 +40,23 @@ app.UseAuthorization(); // Even if valid, there are rules for authorization  to 
 
 app.MapControllers();
 
+// allow access to all services included inside program class.
+// To automatically apply Seed class to data in application
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+try 
+{   //To handle exception as it is not an http request which does not go through an http request pipeline.
+    //get data from user's database using required service,
+    var context = services.GetRequiredService<DataContext>();
+    // Just dropdatabase and restart API to reset everything (clena slate data).
+    await context.Database.MigrateAsync();
+    await Seed.SeedUsers(context); 
+}
+catch (Exception ex) 
+{   //get Logger service and throw exception error.
+    var logger = services.GetService<ILogger<Program>>();
+    logger.LogError(ex, "An error occured during migration");
+
+}
 app.Run(); // command to run application.
