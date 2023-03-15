@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: 'api/' // production just has api/ which serve from same domain effectively.
 };

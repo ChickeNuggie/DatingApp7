@@ -16,7 +16,7 @@ namespace API.Entities
 
         public DateOnly DateOfBirth { get; set; } // create extension API to calculate age of birth of each user
 
-        public string KnwonAs { get; set; }
+        public string KnownAs { get; set; }
 
         public DateTime Created { get; set; } = DateTime.UtcNow;
 

@@ -27,7 +27,7 @@ namespace API.Data
             // from service that added to application service
             .SingleOrDefaultAsync();
             
-        }
+        } 
 
         public async Task<IEnumerable<MemberDto>> GetMembersAsync()
         {   

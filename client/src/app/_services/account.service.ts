@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
 
 //API: 
@@ -14,7 +15,7 @@ import { User } from '../_models/user';
 // stores state request where app will remember no matter the user is in the application.
 // singletons: instatiated when application starts and destroyed and app shuts down
 export class AccountService {
-  baseURL = 'https://localhost:5001/api/';
+  baseURL = environment.apiUrl;
   // allows you to store a current value and emit it to subscribers whenever they subscribe to the observable.
   // i.e. User's subscribe to newsletter (observable) and notification will be automatically send to user endpoint
   //similar to the Subject type, but it also has a current value that can be accessed even if there are no subscribers.

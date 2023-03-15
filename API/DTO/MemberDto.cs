@@ -8,7 +8,7 @@ namespace API.DTO
         public string PhotoUrl { get; set; }
         public int Age{ get; set; }
 
-        public string KnwonAs { get; set; }
+        public string KnownAs { get; set; }
 
         public DateTime Created { get; set; }
 
