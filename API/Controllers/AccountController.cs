@@ -60,7 +60,10 @@ namespace API.Controllers
         {       
             // User's password Hash (byte array)
             // The user's information is retrieved from the database context using the provided loginDto.Username as a filter.
-            var user = await _context.Users.SingleOrDefaultAsync(x => 
+            // By default, Entity framework does not load related entities
+            var user = await _context.Users
+            .Include(p => p.Photos) // load photos to ensure user.Photos not null and check its property if isMain and access the URL
+            .SingleOrDefaultAsync(x => 
             x.UserName == loginDto.Username); // 'Find' requires primary key but username is not thus, use either First/SingleOrDefaultAsync
 
             // Check to see if user exist in data base
@@ -88,7 +91,8 @@ namespace API.Controllers
             return new UserDto
             {
                 UserName = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
             //Overall, this method checks the user's input against the stored user data in the database and returns a token if the input is valid.
         }   

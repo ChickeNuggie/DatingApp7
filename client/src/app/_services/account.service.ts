@@ -51,9 +51,8 @@ export class AccountService {
           //Use http client to make the call to API service and return User's DTO back from API server.
           return this.http.post<User>(this.baseURL + 'account/register', model).pipe(
             map(user => {
-              if (user) {
-                localStorage.setItem('user', JSON.stringify(user));
-                this.currentUserSource.next(user);
+              if (user) { 
+                this.setCurrentUser(user);
               }
               // return user;
             })
@@ -61,6 +60,7 @@ export class AccountService {
         }
 
         setCurrentUser(user: User) {
+          localStorage.setItem('user', JSON.stringify(user));
           this.currentUserSource.next(user);
         } 
 

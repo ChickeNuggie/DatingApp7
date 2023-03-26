@@ -4,6 +4,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { FileUploadModule } from 'ng2-file-upload';
 
 //create 3rd party component imports and separate from angular's component
 //used to declare and export common components, directives (i.e. ngIf, ngFor), and pipes that are used across multiple modules within the application
@@ -17,7 +19,11 @@ import { NgxGalleryModule } from '@kolkov/ngx-gallery';
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right'
     }),
-    NgxGalleryModule
+    NgxGalleryModule,
+    NgxSpinnerModule.forRoot({
+      type: 'pacman'
+    }),
+    FileUploadModule
   ],
 
   //required to export name of modules only  in order for shared modules to work in app.modules.
@@ -25,7 +31,9 @@ import { NgxGalleryModule } from '@kolkov/ngx-gallery';
     BsDropdownModule,
     ToastrModule,
     TabsModule,
-    NgxGalleryModule
+    NgxGalleryModule,
+    NgxSpinnerModule,
+    FileUploadModule
   ]
 })
 export class SharedModule { }

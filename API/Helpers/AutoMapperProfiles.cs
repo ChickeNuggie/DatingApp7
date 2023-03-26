@@ -22,6 +22,7 @@ namespace API.Helpers
 
             //Create mapping  from Photo entity to PhotoDto display relevant user's info
             CreateMap<Photo, PhotoDto>();
+            CreateMap<MemberUpdateDto, AppUser>(); // map from memberupdateDto to app user 
 
         }
     }

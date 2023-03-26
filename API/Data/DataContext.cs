@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
+// An Instance that access database from backend to execute sql command, acts as a bridge connection point between database and backend
+
     public class DataContext : DbContext
     {
         // [Key] // specify Primary (Unique) Key identification if required

@@ -1,11 +1,12 @@
 
 using API.Data;
+using API.Helpers;
 using API.Interfaces;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
-{
+{   // Add services that allows to use any related database access and outside of the database access in several different parts of the application.
     // make class static to use method inside class without instantiate a new instance of this class
     public static class ApplicationServiceExtentsions
     {
@@ -42,6 +43,12 @@ namespace API.Extensions
 
             //Add automapper service on assembly on current domain (single project)
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // Add configuration Cloundinary settings class to app service extension that matches exactly from appsettings.son
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+
+            // Add services and interface of PhotoService into application service extension in order to function and inject to other classes.
+            services.AddScoped<IPhotoService, PhotoService>();
             return services;
         }
     }
