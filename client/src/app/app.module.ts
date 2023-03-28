@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
@@ -24,7 +24,12 @@ import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
+import { TextInputComponent } from './_forms/text-input/text-input.component';
+import { DatePickerComponent } from './_forms/date-picker/date-picker.component';
 
+//defines the root module of the application.
+//may also contain other configuration options for the application, such as routes, authentication settings, and other global settings that are shared across the entire application.
+// plays a critical role in configuring and initializing a .NET application, and is typically one of the first files that developers modify when starting a new project.
 //modules are the building blocks of the application's structure and organization.
 //is a logical unit that groups related components, services, directives, and pipes together
 //It provides a way to organize the application into distinct, reusable parts, and to manage dependencies between them.
@@ -32,7 +37,20 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 
 @NgModule({
   declarations: [ // for creating new component
-    AppComponent, NavComponent, HomeComponent, RegisterComponent, MemberListComponent, MemberDetailComponent, ListsComponent, MessagesComponent, TestErrorComponent, NotFoundComponent, ServerErrorComponent, MemberCardComponent, MemberEditComponent, PhotoEditorComponent
+    AppComponent, 
+    NavComponent, 
+    HomeComponent, 
+    RegisterComponent, 
+    MemberListComponent, 
+    MemberDetailComponent, 
+    ListsComponent, 
+    MessagesComponent, 
+    TestErrorComponent, 
+    NotFoundComponent, 
+    ServerErrorComponent, 
+    MemberCardComponent, 
+    MemberEditComponent, 
+    PhotoEditorComponent, TextInputComponent, DatePickerComponent
   ],
   imports: [ // for creating new module
     BrowserModule,
@@ -40,7 +58,9 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule, // 2-way binds between NAV framework component and html template to enable info sent to our component when users to complete in a form 
+    ReactiveFormsModule,
     SharedModule
+
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: ErrorsInterceptor, multi: true},

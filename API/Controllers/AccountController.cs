@@ -5,6 +5,7 @@ using API.Data;
 using API.DTO;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +17,11 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
             _tokenService = tokenService;
         }
@@ -31,17 +34,18 @@ namespace API.Controllers
             //Check if username exists
             if (await UserExists(registerDto.UserName)) return BadRequest("Username is taken");
 
+            var user = _mapper.Map<AppUser>(registerDto); //Map properties into app user from registerDto.
+
             // If username does not exist, create new instance in memory and then create App user.
             using var hmac = new HMACSHA512(); // random hashing provided by .Net which comes with generated key.
             // 'using' automatically dispose class that are stored in memory created in local scope.
 
-            var user = new AppUser 
-            {
-                UserName = registerDto.UserName.ToLower(), // to compare same object string values due to case sensitivity
-                // as passwordhash stores bye arrays, need to get bytes array from computehash
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)), // if do not provide argument or set to null, there will be no reference exception when attempt to get list of bytes
-                PasswordSalt = hmac.Key
-            };
+            // Update user object values  
+            user.UserName = registerDto.UserName.ToLower(); // to compare same object string values due to case sensitivity
+            // as passwordhash stores bye arrays, need to get bytes array from computehash
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)); // if do not provide argument or set to null, there will be no reference exception when attempt to get list of bytes
+            user.PasswordSalt = hmac.Key;
+
 
             _context.Users.Add(user); // simply tracking new entity in memory
             await _context.SaveChangesAsync();// add and save data from tracked users to database.
@@ -49,7 +53,8 @@ namespace API.Controllers
             return new UserDto
             {
                 UserName = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                KnownAs = user.KnownAs 
             };
         }
 
@@ -92,7 +97,8 @@ namespace API.Controllers
             {
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                KnownAs = user.KnownAs 
             };
             //Overall, this method checks the user's input against the stored user data in the database and returns a token if the input is valid.
         }   

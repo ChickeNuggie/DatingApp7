@@ -6,6 +6,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { FileUploadModule } from 'ng2-file-upload';
+import {BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 //create 3rd party component imports and separate from angular's component
 //used to declare and export common components, directives (i.e. ngIf, ngFor), and pipes that are used across multiple modules within the application
@@ -23,7 +24,8 @@ import { FileUploadModule } from 'ng2-file-upload';
     NgxSpinnerModule.forRoot({
       type: 'pacman'
     }),
-    FileUploadModule
+    FileUploadModule,
+    BsDatepickerModule.forRoot()
   ],
 
   //required to export name of modules only  in order for shared modules to work in app.modules.
@@ -33,7 +35,8 @@ import { FileUploadModule } from 'ng2-file-upload';
     TabsModule,
     NgxGalleryModule,
     NgxSpinnerModule,
-    FileUploadModule
+    FileUploadModule,
+    BsDatepickerModule
   ]
 })
 export class SharedModule { }
