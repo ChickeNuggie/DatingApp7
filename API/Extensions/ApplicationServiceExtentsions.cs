@@ -49,6 +49,9 @@ namespace API.Extensions
 
             // Add services and interface of PhotoService into application service extension in order to function and inject to other classes.
             services.AddScoped<IPhotoService, PhotoService>();
+            
+            //Add services to update user log activity into the application
+            services.AddScoped<LogUserActivity>();
             return services;
         }
     }

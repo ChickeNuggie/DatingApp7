@@ -23,7 +23,8 @@ namespace API.Services
             var claims = new List<Claim> 
             {   //set claims to user's name.
                 //To check if users are who they claimed to be.
-                new Claim(JwtRegisteredClaimNames.NameId, user.UserName)//set user's name claim in token
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),//set user's name claim in token
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature); // specify type of algorithm used to encrypt key

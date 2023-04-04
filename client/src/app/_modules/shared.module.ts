@@ -7,6 +7,10 @@ import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { FileUploadModule } from 'ng2-file-upload';
 import {BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { TimeagoModule } from 'ngx-timeago';
+
 
 //create 3rd party component imports and separate from angular's component
 //used to declare and export common components, directives (i.e. ngIf, ngFor), and pipes that are used across multiple modules within the application
@@ -25,7 +29,10 @@ import {BsDatepickerModule } from 'ngx-bootstrap/datepicker';
       type: 'pacman'
     }),
     FileUploadModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    PaginationModule.forRoot(),
+    ButtonsModule.forRoot(),
+    TimeagoModule.forRoot()
   ],
 
   //required to export name of modules only  in order for shared modules to work in app.modules.
@@ -36,7 +43,10 @@ import {BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     NgxGalleryModule,
     NgxSpinnerModule,
     FileUploadModule,
-    BsDatepickerModule
+    BsDatepickerModule,
+    PaginationModule,
+    ButtonsModule,
+    TimeagoModule
   ]
 })
 export class SharedModule { }

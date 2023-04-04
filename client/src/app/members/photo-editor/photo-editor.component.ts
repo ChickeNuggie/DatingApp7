@@ -97,7 +97,7 @@ export class PhotoEditorComponent implements OnInit {
           this.accountService.setCurrentUser(this.user);
         }
       }
-    }
+    } 
   }
 
 

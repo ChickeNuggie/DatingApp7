@@ -2,6 +2,7 @@ using System.Security.Claims;
 using API.DTO;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -44,7 +45,7 @@ namespace API.Controllers
         // It gets request from database 
         // Get request returns 200 OK response
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()  // asynchronous code
+        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)  // asynchronous code, specify from query string for API to find the parameters
         // ActionResult allows to wrap responses inside (i.e. badrequest(), NotFound() etc.)
         // It is a method in a controller class that handles incoming HTTP requests and returns an HTTP response to the client.
         // It provides a way to encapsulate the result of an action method, including the HTTP status code, response body, and other HTTP headers.
@@ -53,9 +54,22 @@ namespace API.Controllers
             //-  OkObjectResult for a successful response with a JSON payload or NotFoundResult for a 404 error.
         // This makes it easier to write testable and maintainable code.
         {
-            var users = await _userRepository.GetMembersAsync(); // asynchronous await = wait for it and notify when its been compelted.
+            var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            userParams.CurrentUsername = currentUser.UserName; // populate current user name in user parameter
+
+            // Default gender
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            }
+
+            var users = await _userRepository.GetMembersAsync(userParams); // asynchronous await = wait for it and notify when its been compelted.
         // get List of the User's Database (IEnumerable = C# array)  
         // easier than writing query, making connection to database, ensure connections available and then writing sql, get it back and map it to objects that we want to return
+            
+            Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, 
+            users.TotalCount, users.TotalPages));
+            
             return Ok(users);        
         }
 

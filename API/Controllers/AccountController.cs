@@ -98,7 +98,8 @@ namespace API.Controllers
                 UserName = user.UserName,
                 Token = _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                KnownAs = user.KnownAs 
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             };
             //Overall, this method checks the user's input against the stored user data in the database and returns a token if the input is valid.
         }   
