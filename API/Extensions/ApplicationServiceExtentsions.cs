@@ -52,6 +52,9 @@ namespace API.Extensions
             
             //Add services to update user log activity into the application
             services.AddScoped<LogUserActivity>();
+
+            //Add services to access likes repository
+            services.AddScoped<ILikesRepository, LikesRepository>();
             return services;
         }
     }

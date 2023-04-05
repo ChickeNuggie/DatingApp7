@@ -41,7 +41,7 @@ export class MemberListComponent implements OnInit {
           console.log(response.result)
           console.log(response.pagination)
         }
-      })
+      }) 
     }
 
   }

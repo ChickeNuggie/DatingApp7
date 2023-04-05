@@ -38,11 +38,10 @@ namespace API.Entities
         public List<Photo> Photos { get; set; } = new ();
         // Avoid repeated cycle from getting methods between AppUser and Photo class (create seperate DTO class with appropriate properties)
 
-        //Automapper needs to get full entity in order to use this method inside thus, causing big query to still occur and result in returning passwordhash,salt, etc.
-        // public int GetAge() 
-        // {
-        //     return DateOfBirth.CalculateAge();
-        // }
+        public List<UserLike> LikedByUser { get; set; }
+        public List<UserLike> LikedUsers { get; set; }
+
+
 
     }
 
