@@ -1,23 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
 import { Member } from 'src/app/_models/member';
+import { Message } from 'src/app/_models/message';
 import { MembersService } from 'src/app/_services/members.service';
+import { MessageService } from 'src/app/_services/message.service';
 
 @Component({
   selector: 'app-member-detail',
   templateUrl: './member-detail.component.html',
   styleUrls: ['./member-detail.component.css']
 })
+// Note: parent class also loads child dependency methods and properties as well.
 export class MemberDetailComponent implements OnInit {
-  member: Member | undefined; // forced to check if member's exist before attemp to access and use members' method it.
+  @ViewChild('memberTabs', {static: true}) memberTabs?: TabsetComponent;
+  member: Member = {} as Member; // forced to check if member's exist before attemp to access and use members' method it. Since member comes from route, database it will always.
   galleryOptions: NgxGalleryOptions[] = [];
   galleryImages: NgxGalleryImage[] = [];
   //Activate this route which take the user to the member detail component and access the route parameter of the username upon clicking onto the link.
-  constructor(private memberService: MembersService, private route: ActivatedRoute) { }
+  activeTab?: TabDirective;
+  messages: Message[] = [];
+  
+  
+  constructor(private memberService: MembersService, private route: ActivatedRoute,
+     private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.loadMember();
+   //get member data from app route instead
+   this.route.data.subscribe({
+    next: data => {
+      this.member = data['member'] // access member property inside the route
+    }
+   })
+
+    this.route.queryParams.subscribe({
+      next: params => {
+        //ensure have parameters before attempt to use the parameters
+        params['tab'] && this.selectTab(params['tab'])
+      }
+    })
 
     this.galleryOptions = [
       {
@@ -29,6 +51,7 @@ export class MemberDetailComponent implements OnInit {
         preview: false
       }
     ]
+    this.galleryImages = this.getImages(); 
 
   }
 
@@ -45,21 +68,32 @@ export class MemberDetailComponent implements OnInit {
   return imageUrls;
   }
 
-  loadMember() {
-    //get access to snapshot of currently activated routes snapshots.
-    //paramap = map/array of root parameters inside root snapshots
-    var username = this.route.snapshot.paramMap.get('username')
-    if (!username) return; // stops the execution of the method to prevent unauthorized users from accessing the member information..
-    this.memberService.getMember(username).subscribe({ // getmethod from memberservice and access to observable object and get back from API
-      next: member => {
-        this.member = member;
-        this.galleryImages = this.getImages(); 
-      }
-      // nex tto specify sets the value of the member property on the current class instance to the emitted value.
-    })
-   //gets the username parameter from the current activated route snapshot and uses it to request a member object from an API service.
-    //If the username value is not present in the snapshot, the method does not proceed with the API request. 
-    //When the member object is retrieved, the method sets the member property on the current class instance to the retrieved value.
 
+  selectTab(heading: string) {
+    if (this.memberTabs) {
+      //find parameter in array of tabs and set active property to true.
+      //! turnss off typescript safety.
+      this.memberTabs.tabs.find(x => x.heading === heading)!.active = true;
+    }
+  }
+
+
+  loadMessages() {
+    if (this.member) {
+      this.messageService.getMessageThread(this.member.userName).subscribe({
+        next: messages =>
+        this.messages = messages
+      })
+    }
+  }
+
+  //do something when this method is is activated and check if user are on message tab
+  onTabActivated(data: TabDirective)
+  {
+    this.activeTab = data;
+    // Only if messages tab is activated, then messages will be shown
+    if (this.activeTab?.heading === 'Messages') {
+      this.loadMessages();
+    }
   }
 }

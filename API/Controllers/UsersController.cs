@@ -87,7 +87,7 @@ namespace API.Controllers
 
         }
 
-        // Update the endpoints of the users' profilei98u0
+        // Update the endpoints of the users' profile
         //Update response return no content 
         [HttpPut]
         public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto) 

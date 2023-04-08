@@ -55,6 +55,11 @@ namespace API.Extensions
 
             //Add services to access likes repository
             services.AddScoped<ILikesRepository, LikesRepository>();
+            
+            //Add services to access message repository
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            
+            
             return services;
         }
     }

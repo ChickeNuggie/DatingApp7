@@ -26,6 +26,7 @@ import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { TextInputComponent } from './_forms/text-input/text-input.component';
 import { DatePickerComponent } from './_forms/date-picker/date-picker.component';
+import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 
 //defines the root module of the application.
 //may also contain other configuration options for the application, such as routes, authentication settings, and other global settings that are shared across the entire application.
@@ -50,7 +51,7 @@ import { DatePickerComponent } from './_forms/date-picker/date-picker.component'
     ServerErrorComponent, 
     MemberCardComponent, 
     MemberEditComponent, 
-    PhotoEditorComponent, TextInputComponent, DatePickerComponent
+    PhotoEditorComponent, TextInputComponent, DatePickerComponent, MemberMessagesComponent
   ],
   imports: [ // for creating new module
     BrowserModule,
