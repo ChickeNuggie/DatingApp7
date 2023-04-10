@@ -1,11 +1,18 @@
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace API.Data
 {
 // An Instance that access database from backend to execute sql command, acts as a bridge connection point between database and backend
 
-    public class DataContext : DbContext
+    //need to specify the class that we have created(appuser, approle, claims, etc) and specify int values.
+    //Note: order of classess is important!!
+    public class DataContext : IdentityDbContext<AppUser, AppRole, int, 
+        IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>, 
+        IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         // [Key] // specify Primary (Unique) Key identification if required
         // Constructor
@@ -14,13 +21,26 @@ namespace API.Data
         { 
         }
 
-        public DbSet<AppUser> Users { get; set; } // set table name to 'Users' which consist of AppUser class type with ID and UserName
         public DbSet<UserLike> Likes { get; set; }
 
         public DbSet<Message> Messages { get; set; }
 
+        //Configure database context. (tables)
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<AppUser>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.User)
+                .HasForeignKey( ur => ur.UserId)
+                .IsRequired(); // foreign key is required.
+
+            builder.Entity<AppRole>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(u => u.Role)
+                .HasForeignKey( ur => ur.RoleId)
+                .IsRequired(); // foreign key is required.
+
+
             base.OnModelCreating(builder);
             builder.Entity<UserLike>() // specify configuration on relationship
             .HasKey(k => new {k.SourceUserId, k.TargetUserId}); // primary key of UserLike table.

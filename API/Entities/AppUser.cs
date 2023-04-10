@@ -1,18 +1,12 @@
 using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUser
+    // Note: ASP.Net core Indentity will be responsible for taking over custom hash in accountcontroller to hash(10000 iterations), salt and storing of password in database
+    //it takes cares of the id, username, password and passwordhash
+    public class AppUser : IdentityUser<int>
     {
-        public int Id { get; set; } // User's ID, defasult constructor value is 0.
-        public string UserName { get; set; } // ? is optional constructor as stirng by default requires a non-null value. 
-        // Alternatively, disable null control in API.csproj file 'Nullable'
-        
-        // adding new entities should also create additional columns to accommodate these properties via new migrations.
-        // and update database accordingly
-        public byte[] PasswordHash { get; set; }
-
-        public byte[] PasswordSalt { get; set; }
 
         public DateOnly DateOfBirth { get; set; } // create extension API to calculate age of birth of each user
 
@@ -43,6 +37,7 @@ namespace API.Entities
 
         public List<Message> MessagesSent { get; set; }
         public List<Message> MessagesReceived { get; set; }
+        public ICollection<AppUserRole> UserRoles { get; set; } // navigation property to the join table (appuser collection)
 
 
     }

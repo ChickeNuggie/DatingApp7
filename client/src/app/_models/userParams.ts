@@ -10,6 +10,6 @@ export class UserParams {
 
     // Class allows us to create constructor to initialize values inside class upon using it.
     constructor(user: User) {
-        this.gender = user.gender === 'female' ? 'male' : 'female';
+        this.gender = user.gender === 'female' ? 'male' : 'female'
     }
 }

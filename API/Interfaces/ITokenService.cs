@@ -6,6 +6,6 @@ namespace API.Interfaces
     //// able to isolate test without implementing other context but only classes that implements this.
     public interface ITokenService 
     {
-     string CreateToken(AppUser user);   
+     Task<string> CreateToken(AppUser user);   
     }
 }

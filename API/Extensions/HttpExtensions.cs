@@ -16,7 +16,7 @@ namespace API.Extensions
             //access response and header and add json serializer on the response header.x
             response.Headers.Add("Pagination", JsonSerializer.Serialize(header, jsonOptions));
             //access information inside of the header
-            response.Headers.Add("Access-Control-Exposed-Headers", "Pagination");
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
             //
         }
     }

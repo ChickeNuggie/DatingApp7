@@ -60,6 +60,10 @@ export class AccountService {
         }
 
         setCurrentUser(user: User) {
+          user.roles = [];
+          const roles = this.getDecodedToken(user.token).role;
+          // check if roles is an array of roles, if it is, set user roles to it, else push the roles into array of user's roles property
+          Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
           localStorage.setItem('user', JSON.stringify(user));
           this.currentUserSource.next(user);
         } 
@@ -68,7 +72,15 @@ export class AccountService {
         localStorage.removeItem('user');
         this.currentUserSource.next(null);
     }
+
+    //get information of the json web token than its alogirthm and signature.
+    getDecodedToken(token: string) {
+      return JSON.parse(atob(token.split('.')[1]))
+    }
+
+
   }
 
 //Overall, this code is a simplified example of an Angular authentication service that sends login credentials to a server,
 //retrieves a user object, and stores it in the browser's localStorage.
+

@@ -17,7 +17,7 @@ export class MemberListComponent implements OnInit {
   members: Member[] = [];
   pagination: Pagination | undefined;
   userParams: UserParams | undefined;
-  genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}] // display on dropdown list
+  genderList = [{ value: 'male', display: 'Males' }, { value: 'female', display: 'Females' }] // display on dropdown list
 
   constructor(private memberService: MembersService) {
     this.userParams = this.memberService.getUserParams();
@@ -38,8 +38,8 @@ export class MemberListComponent implements OnInit {
             this.members = response.result;
             this.pagination = response.pagination;
           }
-          console.log(response.result)
-          console.log(response.pagination)
+          // console.log(response.result)
+          // console.log(response.pagination)
         }
       }) 
     }
@@ -58,7 +58,7 @@ export class MemberListComponent implements OnInit {
     // check if userparams and page number not the same as page on click (event) and prevent any funky behaviour caused by multiple request.
     if (this.userParams && this.userParams?.pageNumber !== event.page) {
       this.userParams.pageNumber = event.page;
-      this,this.memberService.setUserParams(this.userParams); // updated memberservice as well
+      this.memberService.setUserParams(this.userParams); // updated memberservice as well
       this.loadMembers(); // retrieve updated content of member page
   
     }

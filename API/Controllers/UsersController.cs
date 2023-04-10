@@ -51,7 +51,7 @@ namespace API.Controllers
         // It provides a way to encapsulate the result of an action method, including the HTTP status code, response body, and other HTTP headers.
         // It is is an abstract class, which means that it cannot be instantiated directly.
         // Instead, you can use one of its derived classes to return a specific type of HTTP response, such as:
-            //-  OkObjectResult for a successful response with a JSON payload or NotFoundResult for a 404 error.
+            //-  OkObjectResult for a  successful response with a JSON payload or NotFoundResult for a 404 error.
         // This makes it easier to write testable and maintainable code.
         {
             var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
@@ -72,6 +72,7 @@ namespace API.Controllers
             
             return Ok(users);        
         }
+
 
         [HttpGet("{username}")] // Spcify username of the User to Get correct user database from the repository
         public async Task<ActionResult<MemberDto>> GetUser(string username) // asynchronous code

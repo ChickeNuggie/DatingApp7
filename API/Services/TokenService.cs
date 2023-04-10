@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services
@@ -14,11 +15,14 @@ namespace API.Services
         // AsymmetricSecurityKey used when server needs to encrypt something and client needs to decrypt something (requires public key to decrypt data and private key which stays in the server)
         private readonly SymmetricSecurityKey _key; 
         // construct and store secret key in the configuration via injecting iConfig into service.
-        public TokenService(IConfiguration config)
+        private readonly UserManager<AppUser> _userManager; // to check what roles the user is
+        public TokenService(IConfiguration config, UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
-        public string CreateToken(AppUser user)
+        //async required to access or call to database
+        public async Task<string> CreateToken(AppUser user)
         {
             var claims = new List<Claim> 
             {   //set claims to user's name.
@@ -26,6 +30,10 @@ namespace API.Services
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),//set user's name claim in token
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature); // specify type of algorithm used to encrypt key
 
@@ -36,6 +44,7 @@ namespace API.Services
                 SigningCredentials = creds
             };
 
+            //Add new role or multiple claims as user can be many roles.
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

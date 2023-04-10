@@ -33,9 +33,9 @@ namespace API.Data
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {   
             //Return list of MemberDto
-            var query= _context.Users.AsQueryable();
+            var query = _context.Users.AsQueryable();
             // build up query based on user parameters
-            // (Filter) Exlude current logged in user from the list of matches result returned.
+            // (Filter) Exlude current logged in user from the list ofP matches result returned.
             query = query.Where(u => u.UserName != userParams.CurrentUsername);
             query = query.Where(u => u.Gender == userParams.Gender);
 

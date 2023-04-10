@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,11 @@ namespace API.Data
 {
     public class Seed 
     {   // access class method instantly 'Seed.SeedUser' without creating new instance 'var seed = new Seed();'
-        public static async Task SeedUsers(DataContext context) 
+        public static async Task SeedUsers(UserManager<AppUser> userManager, 
+            RoleManager<AppRole> roleManager) 
         {
             //check if user exist in database to prevent seeding same user.
-            if (await context.Users.AnyAsync()) return; //stop execution of this method.
+            if (await userManager.Users.AnyAsync()) return; //stop execution of this method.
 
             var userData = await File.ReadAllTextAsync("Data/UserSeedData.json");
 
@@ -22,23 +24,41 @@ namespace API.Data
             //convert Json to C# objects.
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
 
+            //create roles for the application
+            var roles = new List<AppRole>
+            {
+                new AppRole{Name = "Member"},
+                new AppRole{Name = "Admin" },
+                new AppRole{Name = "Moderator" }
+            };
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
+
             //Generate password for each users.
             foreach (var user in users)
             {
-                using var hmac = new HMACSHA512();
 
                 user.UserName = user.UserName.ToLower(); // for comparing users to users to be consistent
-                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd")); // complex password set to test functionality of seed users
-                user.PasswordSalt = hmac.Key;
+                //It will create and save changes in database
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+                await userManager.AddToRoleAsync(user, "Member");
 
-                //Adding user inside each loop            
-                context.Users.Add(user); // add to entity framework tracking
             }
-            // save changes to users to database
-            await context.SaveChangesAsync();
 
             //Note: To automatically apply seed to data in application, best to apply when application 'Program.cs' start up (entry point of application)  
             //(without using .Net SQL tool 'dotnet ef mirgrations/add/update/remove')
+
+            var admin = new AppUser{
+                UserName = "admin"
+            };
+
+            await userManager.CreateAsync(admin, "Pa$$w0rd");
+            // add user to multiple multiple roles
+            await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"}); 
+        
          }
     }
 }

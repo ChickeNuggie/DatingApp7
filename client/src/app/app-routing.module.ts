@@ -12,6 +12,8 @@ import { MessagesComponent } from './messages/messages.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { PreventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.guard';
 import { MemberDetailedResolver } from './_resolvers/member-detailed.resolver';
+import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { AdminGuard } from './_guards/admin.guard';
 
 const routes: Routes = [
 {path: '', component: HomeComponent}, // empty route to home component
@@ -24,6 +26,8 @@ children: [
     {path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard]}, // allows individual member to edit own profile upon authentication
     {path: 'lists', component: ListsComponent},
     {path: 'messages', component: MessagesComponent},
+    //In order to get to admin access, user need to authenticate and get past off auth guard, and needs to be an admin or moderator.
+    {path: 'admin', component: AdminPanelComponent, canActivate: [AdminGuard]},
     ]
   },  
 

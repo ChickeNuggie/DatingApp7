@@ -21,7 +21,6 @@ export class MembersService {
   members: Member[] = [];
   memberCache = new Map(); // mapping allows access to get and set property (set result and keys in member cache when get back request from API)
 // Note: the value of map is the paginatedresult
-
   user: User | undefined;
   userParams: UserParams | undefined;
 

@@ -3,8 +3,10 @@
 //It contains the code to instantiate and run the application, as well as any initialization or configuration code that needs to be executed before the application starts. 
 // Used when whenever you need to define the entry point of your C# application and perform any necessary initialization or configuration.
 using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args); 
@@ -49,9 +51,13 @@ try
 {   //To handle exception as it is not an http request which does not go through an http request pipeline.
     //get data from user's database using required service,
     var context = services.GetRequiredService<DataContext>();
+    // usermanager service in order to pass seedusers method.
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    // rolemanager service in order to pass seedusers method.
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     // Just dropdatabase and restart API to reset everything (clena slate data).
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context); 
+    await Seed.SeedUsers(userManager, roleManager); 
 }
 catch (Exception ex) 
 {   //get Logger service and throw exception error.
