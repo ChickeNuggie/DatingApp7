@@ -28,6 +28,8 @@ namespace API.Data
         //Configure database context. (tables)
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder.Entity<AppUser>()
                 .HasMany(ur => ur.UserRoles)
                 .WithOne(u => u.User)
@@ -41,7 +43,6 @@ namespace API.Data
                 .IsRequired(); // foreign key is required.
 
 
-            base.OnModelCreating(builder);
             builder.Entity<UserLike>() // specify configuration on relationship
             .HasKey(k => new {k.SourceUserId, k.TargetUserId}); // primary key of UserLike table.
 
