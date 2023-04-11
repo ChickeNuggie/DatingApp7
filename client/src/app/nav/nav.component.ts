@@ -18,7 +18,7 @@ import { AccountService } from '../_services/account.service';
 export class NavComponent implements OnInit {
 
   //store users' information when they complete that form and put out in console.
-  model: any = {}
+  model: any = {}; 
 
   //inject accountservice component into accountservices class template, private router to route to different html links
   // inject toastr service for text box
@@ -37,8 +37,11 @@ export class NavComponent implements OnInit {
     //extract credientials from form and returns observable from service.
     //// use async pipe to subscribe and unsubscribe to data to prevent memory leak.
     this.accountService.login(this.model).subscribe({ 
-      next: () => this.router.navigateByUrl('/members'), // direct to member list.
+      next: _ =>  {
+      this.router.navigateByUrl('/members'); // direct to member list.
+      this.model = {}; 
       //Interceptor handles error exception thus, need not specify or show error in console log.
+      }
     })
   }
 

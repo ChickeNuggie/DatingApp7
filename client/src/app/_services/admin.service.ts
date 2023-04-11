@@ -22,7 +22,8 @@ export class AdminService {
   updateUserRoles(username: string, roles: string[]) {
     //create single query parameter
     return this.http.post<string[]>(this.baseUrl + 'admin/edit-roles/' 
-      + username + '?roles=' + roles, {});
-  }
+    + username + '?roles=' + roles, {});
 
+  }
+  
 }

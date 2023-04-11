@@ -27,7 +27,7 @@ namespace API.Controllers
                 .Select(u => new // return annoymous object with user id, name and roles.
                 {
                     u.Id,
-                    Username = u.UserName,
+                    UserName = u.UserName,
                     Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
                     
                 })

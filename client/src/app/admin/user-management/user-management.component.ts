@@ -49,9 +49,11 @@ export class UserManagementComponent implements OnInit {
        next: () => {
         const selectedRoles = this.bsModalRef.content?.selectedRoles;
         if (!this.arrayEqual(selectedRoles!, user.roles)) {
+          console.log(user)
           this.adminService.updateUserRoles(user.userName, selectedRoles!).subscribe({
-            next: roles => user.roles = roles
+            next: roles => user.roles = roles,
           })
+          
         }
         
        }
