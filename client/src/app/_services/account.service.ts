@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../_models/user';
+import { PresenceService } from './presence.service';
 
 //API: 
 //Injectable providers can be used to provide services, repositories, and other objects that can be shared across different components and modules.
@@ -27,7 +28,7 @@ export class AccountService {
   //By exposing currentUsers$ as a public property, other parts of the application can subscribe to it to receive updates whenever the current user object changes. 
   //For example, a component could subscribe to currentUsers$ to update its display whenever the current user object changes.
   currentUser$ = this.currentUserSource.asObservable(); // signify that it is an observable
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private presenceService: PresenceService) { }
 
   // pipe to transform data when get back request to the api server .
   login(model: any) {
@@ -59,6 +60,7 @@ export class AccountService {
           ) // do something to the observable before subscribing to it  
         }
 
+        //create hub connection in this method as this method will always be called whenever login or register or refresh browser and get token from local storage
         setCurrentUser(user: User) {
           user.roles = [];
           const roles = this.getDecodedToken(user.token).role;
@@ -66,11 +68,13 @@ export class AccountService {
           Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
           localStorage.setItem('user', JSON.stringify(user));
           this.currentUserSource.next(user);
+          this.presenceService.createHubConnection(user);
         } 
 
       logout() {
         localStorage.removeItem('user');
         this.currentUserSource.next(null);
+        this.presenceService.stopHubConnection();
     }
 
     //get information of the json web token than its alogirthm and signature.

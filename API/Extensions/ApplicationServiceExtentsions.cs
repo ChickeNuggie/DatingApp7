@@ -3,6 +3,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
@@ -58,7 +59,14 @@ namespace API.Extensions
             
             //Add services to access message repository
             services.AddScoped<IMessageRepository, MessageRepository>();
+
+            // real-time connection between users and current user's hub
+            services.AddSignalR();
             
+            //We want this dictionary to be available application wide for every user that conencts to our service.
+            //Do not want this to be destroed once HTTP request has been completed (live as long app is running)
+            services.AddSingleton<PresenceTracker>();
+
             
             return services;
         }

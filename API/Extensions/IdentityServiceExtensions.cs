@@ -40,6 +40,23 @@ namespace API.Extensions
                         ValidateIssuer = false, //API server does not have information to pass information down with token in order to validate it
                         ValidateAudience = false // info not passed with token yet.
                     };
+                    //authenticate inside event of signalR 
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {   //sends token to signalR from client side 
+                            var accessToken = context.Request.Query["access_token"];
+                            
+                            var path = context.HttpContext.Request.Path;
+                            //ensure that accessToken exists. Need to match first html in program class of MapHub
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                            {   //give access to token and add into context.
+                                context.Token = accessToken; 
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddAuthorization(opt => 

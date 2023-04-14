@@ -11,11 +11,11 @@ import { MessageService } from 'src/app/_services/message.service';
 export class MemberMessagesComponent implements OnInit {
   @ViewChild('messageForm') messageForm?: NgForm // access to message form
   @Input() username?: string;
-  @Input() messages: Message[] = [];// inherit messages methods from member-detail component
   messageContent = '';
+  // loading = false;
 
 
-  constructor(private messageService: MessageService) { }
+  constructor(public messageService: MessageService) { }
 
   ngOnInit(): void {
 
@@ -24,12 +24,11 @@ export class MemberMessagesComponent implements OnInit {
   //Listens to database('html') and subscribe to observables, and do actions to it.
   sendMessage() {
     if (!this.username) return; // ensure username exists before sending message.
-    this.messageService.sendMessage(this.username, this.messageContent).subscribe({
-      next: message => {
-        this.messages.push(message);
-        this.messageForm?.reset(); // reset messages chatbox after messages has been sent.
-      }
-    })
+    //use then instead of subscribe when returning a promise from invoke method.
+    // this.loading = true;
+    this.messageService.sendMessage(this.username, this.messageContent).then(() => {
+      this.messageForm?.reset();
+      })
   }
 
 

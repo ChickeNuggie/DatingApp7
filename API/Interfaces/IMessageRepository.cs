@@ -14,5 +14,13 @@ namespace API.Interfaces
         // returns type of List of messages between 2 individual users
         Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName);
         Task<bool> SaveAllAsync();
+
+        //For tracking the group 
+        void AddGroup(Group group);
+        void RemoveConnection(Connection connection);
+        Task<Connection> GetConnection(string connectionId);
+        Task<Group> GetMessageGroup(string groupName);
+        Task<Group> GetGroupForConnection(string connectionId);
+
    }
 }

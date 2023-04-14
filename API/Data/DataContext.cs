@@ -24,6 +24,8 @@ namespace API.Data
         public DbSet<UserLike> Likes { get; set; }
 
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Connection> Connections { get; set; }
 
         //Configure database context. (tables)
         protected override void OnModelCreating(ModelBuilder builder)

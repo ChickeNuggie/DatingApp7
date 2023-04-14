@@ -4,7 +4,8 @@
 // Used for anything that is not production environment, i.e. domain computer: localhost.
 export const environment = {
   production: false,
-  apiUrl:'https://localhost:5001/api/'
+  apiUrl:'https://localhost:5001/api/',
+  hubUrl: 'https://localhost:5001/hubs/'
 };
 
 /*

@@ -28,7 +28,11 @@ namespace API.Helpers
             CreateMap<Message, MessageDto>() // map from message to messageDto, automapper cant by map url by default based on properties, thus need to specify
                 .ForMember(d => d.SenderPhotoUrl, o => o.MapFrom(s => s.Sender.Photos.FirstOrDefault(x => x.IsMain).Url))
                 .ForMember(d => d.RecipientPhotoUrl, o => o.MapFrom(s => s.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
-                
+            
+            //ensure automapper converts date from it is now into UTC date to return consistent date from API.
+            CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+            //For datetime? optional if value exists.
+            CreateMap<DateTime?, DateTime?>().ConvertUsing(d => d.HasValue? DateTime.SpecifyKind(d.Value, DateTimeKind.Utc) : null);
         }   
     }
 }

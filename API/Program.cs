@@ -6,6 +6,7 @@ using API.Data;
 using API.Entities;
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +34,10 @@ var app = builder.Build();
 // BException Handling app before http request pipeline
 app.UseMiddleware<ExceptionMiddleware> ();
 
-app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod()
+app.UseCors(builder => builder
+.AllowAnyHeader()
+.AllowAnyMethod()
+.AllowCredentials() // to allow signalR to authenticate to server from client side.
 .WithOrigins("https://localhost:4200")); // middleware to map controller endpoints i.e. request comes in mapcontroller direct the request to API endpoint.
 
 //Authentication middleware: it tells server how to authenticate the Jwt tokens???. (where order is important)
@@ -41,6 +45,10 @@ app.UseAuthentication(); // Ask if users have valid token
 app.UseAuthorization(); // Even if valid, there are rules for authorization  to go to the Authorize endpoint
 
 app.MapControllers();
+
+//create endpoint/route to enable client to find the hub connection
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
 
 // allow access to all services included inside program class.
 // To automatically apply Seed class to data in application
@@ -57,6 +65,8 @@ try
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     // Just dropdatabase and restart API to reset everything (clena slate data).
     await context.Database.MigrateAsync();
+    // clear connections out when restart application. 
+    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
     await Seed.SeedUsers(userManager, roleManager); 
 }
 catch (Exception ex) 
