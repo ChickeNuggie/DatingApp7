@@ -32,6 +32,7 @@ import { HasRoleDirective } from './_directives/has-role.directive';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { RolesModalComponent } from './modals/roles-modal/roles-modal.component';
+import { ConfirmDialogComponent } from './modals/confirm-dialog/confirm-dialog.component';
 
 //defines the root module of the application.
 //may also contain other configuration options for the application, such as routes, authentication settings, and other global settings that are shared across the entire application.
@@ -61,7 +62,7 @@ import { RolesModalComponent } from './modals/roles-modal/roles-modal.component'
     DatePickerComponent, 
     MemberMessagesComponent, 
     AdminPanelComponent, 
-    HasRoleDirective, UserManagementComponent, PhotoManagementComponent, RolesModalComponent
+    HasRoleDirective, UserManagementComponent, PhotoManagementComponent, RolesModalComponent, ConfirmDialogComponent
   ],
   imports: [ // for creating new module
     BrowserModule,

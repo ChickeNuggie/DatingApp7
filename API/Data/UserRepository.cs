@@ -80,9 +80,12 @@ namespace API.Data
             //It gets full entity from this database and return it in memory to controller
         }
 
-        public async Task<bool> SaveAllAsync()
+        public async Task<string> GetUserGender(string username)
         {
-            return await _context.SaveChangesAsync() > 0; // To indicate if changes saved in database, 0 = false
+            return await _context.Users
+                .Where(x => x.UserName == username)
+                .Select(x => x.Gender)
+                .FirstOrDefaultAsync();
         }
 
         public void Update(AppUser user)

@@ -17,7 +17,7 @@ namespace API.SignalR
             lock(OnlineUsers)
             {   
                 //check if user is connected in dictionary
-                //if user already got a connection and simply adding connection id to the key of username, then the user ahven't geuniely come online
+                //if user already got a connection and simply adding connection id to the key of username, then the user haven't geuniely come online
                 //as they just added another connection and were already online before
                 if (OnlineUsers.ContainsKey(username))
                 {

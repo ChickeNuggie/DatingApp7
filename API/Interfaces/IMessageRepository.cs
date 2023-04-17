@@ -13,7 +13,6 @@ namespace API.Interfaces
         Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams);
         // returns type of List of messages between 2 individual users
         Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName);
-        Task<bool> SaveAllAsync();
 
         //For tracking the group 
         void AddGroup(Group group);

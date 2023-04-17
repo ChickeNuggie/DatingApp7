@@ -16,12 +16,12 @@ namespace API.Controllers
     //Note: BaseAPI include API controller attributes and route that uses controller
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
-     public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+        private readonly IUnitOfWork _uow;
+
+     public LikesController(IUnitOfWork uow)
         {
-            _likesRepository = likesRepository;
-            _userRepository = userRepository;
+            _uow = uow;
+
         }   
 
         //create new resource when user likes another user
@@ -30,15 +30,15 @@ namespace API.Controllers
         public async Task<ActionResult> AddLike(string username)
         {   //user that likes other user
             var sourceUserId = User.GetUserId();
-            var likedUser = await _userRepository.GetUserByUsernameAsync(username);
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+            var likedUser = await _uow.UserRepository.GetUserByUsernameAsync(username);
+            var sourceUser = await _uow.LikesRepository.GetUserWithLikes(sourceUserId);
         
             //Defensive programming by raising and throw exception.
             if (likedUser == null) return NotFound();
 
             if(sourceUser.UserName == username) return BadRequest("You cannot like yourself");
 
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
+            var userLike = await _uow.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
 
             if (userLike != null) return BadRequest("You have already liked this user!");
 
@@ -51,7 +51,7 @@ namespace API.Controllers
             // Create entry in the userlikes join table
             sourceUser.LikedUsers.Add(userLike);
 
-            if (await _userRepository.SaveAllAsync()) return Ok(); 
+            if (await _uow.Complete()) return Ok(); 
             return BadRequest("Failed to like user");
         }
 
@@ -62,7 +62,7 @@ namespace API.Controllers
         {
             likesParams.UserId = User.GetUserId();
 
-            var users = await _likesRepository.GetUserLikes(likesParams);
+            var users = await _uow.LikesRepository.GetUserLikes(likesParams);
 
             //pagination header to filter and query specific properties.
             Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, 

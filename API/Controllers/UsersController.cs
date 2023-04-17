@@ -22,7 +22,7 @@ namespace API.Controllers
     public class UsersController : BaseApiController // every controller needs to derieve from controller based class
     {
 
-        public IUserRepository _userRepository;
+
         //MVC - Model, View, Controller
         // 'Model' 1-1 mapping template for each table of database that consist of columns and attribute.
         // FYI : 'View' - contains final data to view on front-end page. 
@@ -33,10 +33,11 @@ namespace API.Controllers
         // 3. Any dependency added inside constructor are also going to be created.
         // Inject interface Imapper
         private readonly IPhotoService _photoService;
-        public UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) // create respository interface which then have available session with the UserRepository to get all data from database. 
+        private readonly IUnitOfWork _uow;
+        public UsersController(IUnitOfWork uow, IMapper mapper, IPhotoService photoService) // create respository interface which then have available session with the UserRepository to get all data from database. 
         {
+            _uow = uow;
             _photoService = photoService;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
     
@@ -51,19 +52,20 @@ namespace API.Controllers
         // It provides a way to encapsulate the result of an action method, including the HTTP status code, response body, and other HTTP headers.
         // It is is an abstract class, which means that it cannot be instantiated directly.
         // Instead, you can use one of its derived classes to return a specific type of HTTP response, such as:
-            //-  OkObjectResult for a  successful response with a JSON payload or NotFoundResult for a 404 error.
+        //-  OkObjectResult for a  successful response with a JSON payload or NotFoundResult for a 404 error.
         // This makes it easier to write testable and maintainable code.
-        {
-            var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
-            userParams.CurrentUsername = currentUser.UserName; // populate current user name in user parameter
+
+        {//optimizing code by implmenting specific method just to get use's gender instead of returning whole user database.
+            var gender = await _uow.UserRepository.GetUserGender(User.GetUsername());
+            userParams.CurrentUsername = User.GetUsername(); // populate current user name in user parameter
 
             // Default gender
             if (string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+                userParams.Gender = gender == "male" ? "female" : "male";
             }
 
-            var users = await _userRepository.GetMembersAsync(userParams); // asynchronous await = wait for it and notify when its been compelted.
+            var users = await _uow.UserRepository.GetMembersAsync(userParams); // asynchronous await = wait for it and notify when its been compelted.
         // get List of the User's Database (IEnumerable = C# array)  
         // easier than writing query, making connection to database, ensure connections available and then writing sql, get it back and map it to objects that we want to return
             
@@ -84,7 +86,7 @@ namespace API.Controllers
          // asynchronous code allows to get other queries than from incoming request from web sever (no await) and isn't blocked whilist waiting for current query on database to return.
         // may add abit mild extra noise to the code.
 
-         return  await _userRepository.GetMemberAsync(username);
+         return  await _uow.UserRepository.GetMemberAsync(username);
 
         }
 
@@ -95,13 +97,13 @@ namespace API.Controllers
         {
             // Use ClaimsPrinipal Extensions to Find and match nameId (i.e. 'lisa') in the first claims property inside the security JWS token claims. Optional changing to prevent null exception 
             // Ensure that photo is being loaded when getting from userrepository as photos will be counted.
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername()); // Entity framework tracks the username(i.e. 'lisa') and go to repository to get the username
+            var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername()); // Entity framework tracks the username(i.e. 'lisa') and go to repository to get the username
 
             if (user == null) return NotFound();
 
             _mapper.Map(memberUpdateDto, user); // update DTO objects to be written inside user's properties
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();// save the changes to database and return 204 ok status
+            if (await _uow.Complete()) return NoContent();// save the changes to database and return 204 ok status
 
             return BadRequest("Failed to update user"); // if there's no changes to be saved.
         } 
@@ -112,7 +114,7 @@ namespace API.Controllers
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
         // create extension method to use find username based on claim principal extensions: nameidentifier to use across classess.
-         var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+         var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
          if (user == null) return NotFound();
 
@@ -136,7 +138,7 @@ namespace API.Controllers
          // if changes is saved to database and is working, return mapping into PhotoDTO from photo
         // Go through request for user (user login) based on their username and get their exact location of newly uploaded url images created on server.
         // This could prevent unauthorized access to individual photos. 
-         if (await _userRepository.SaveAllAsync())
+         if (await _uow.Complete())
          {
             //created uploads upon action tasks above.
             //Get User via User api "user/username" to get root value = name of the user.
@@ -151,7 +153,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo/{photoId}")] 
         public async Task<ActionResult> SetMainPhoto(int photoId) 
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             if(user == null) return NotFound();
             // find photo id from users' photo object
@@ -165,7 +167,7 @@ namespace API.Controllers
             if (currentMain != null) currentMain.IsMain = false;
             photo.IsMain = true;
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _uow.Complete()) return NoContent();
 
             return BadRequest("Problem setting main photo");
             }
@@ -174,7 +176,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
 
@@ -191,7 +193,7 @@ namespace API.Controllers
             user.Photos.Remove(photo);
             
             // correct response to return for a http delete request/method
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _uow.Complete()) return Ok();
 
             return BadRequest("Problem deleting photo");
         }

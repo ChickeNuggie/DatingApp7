@@ -39,9 +39,6 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>(); // have to provide both interface and its implemented class
             // able to isolate test without implementing other context.
 
-            // makes this classes injectable to user controller
-            services.AddScoped<IUserRepository, UserRepository>(); 
-
             //Add automapper service on assembly on current domain (single project)
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -54,12 +51,6 @@ namespace API.Extensions
             //Add services to update user log activity into the application
             services.AddScoped<LogUserActivity>();
 
-            //Add services to access likes repository
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            
-            //Add services to access message repository
-            services.AddScoped<IMessageRepository, MessageRepository>();
-
             // real-time connection between users and current user's hub
             services.AddSignalR();
             
@@ -67,6 +58,8 @@ namespace API.Extensions
             //Do not want this to be destroed once HTTP request has been completed (live as long app is running)
             services.AddSingleton<PresenceTracker>();
 
+            //Add UnitOfWork (combination of repositories)
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             
             return services;
         }

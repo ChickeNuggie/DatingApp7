@@ -39,7 +39,7 @@ export class NavComponent implements OnInit {
     this.accountService.login(this.model).subscribe({ 
       next: _ =>  {
       this.router.navigateByUrl('/members'); // direct to member list.
-      this.model = {}; 
+      this.model = {}; //reset template form to initially created empty object.
       //Interceptor handles error exception thus, need not specify or show error in console log.
       }
     })

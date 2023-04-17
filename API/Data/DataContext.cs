@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 namespace API.Data
 {
 // An Instance that access database from backend to execute sql command, acts as a bridge connection point between database and backend
-
+// Note: abstraction of the database.
     //need to specify the class that we have created(appuser, approle, claims, etc) and specify int values.
     //Note: order of classess is important!!
     public class DataContext : IdentityDbContext<AppUser, AppRole, int, 

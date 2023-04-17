@@ -7,7 +7,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
-{
+{// Note: further abstraction of the database.
     public class MessageRepository : IMessageRepository
     {
         private readonly DataContext _context;
@@ -90,10 +90,8 @@ namespace API.Data
 
         // Display messages between 2 users. (messages from currently logged in user to target user thay they want to message/messaged)
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
-        {
-            var messages = await _context.Messages
-            .Include(u => u.Sender).ThenInclude(p => p.Photos)// photos are related entity for app user.
-            .Include(u => u.Recipient).ThenInclude(p => p.Photos)
+        {// Project sepcific query and load the database than loading everything and returning full entity 
+            var query = _context.Messages
             .Where(
                 m => m.RecipientUsername == currentUserName && m.RecipientDeleted == false && // delete from receiver side in messages tab.
                 m.SenderUsername == recipientUserName ||
@@ -101,10 +99,10 @@ namespace API.Data
                 m.SenderUsername == currentUserName
             )
             .OrderBy(m => m.MessageSent)
-            .ToListAsync(); // return list of messages in memory as executed query against database
+            .AsQueryable();
 
             //ensure that it is the recipient username that read the messages sent by sender and that's the message to mark as date read.
-            var unreadMessages = messages.Where(m => m.DateRead == null &&
+            var unreadMessages = query.Where(m => m.DateRead == null &&
              m.RecipientUsername == currentUserName).ToList();
 
             if (unreadMessages.Any())
@@ -114,11 +112,9 @@ namespace API.Data
                     //i.e. open message tab and see messages that are either read or unread instead of marked all read.
                     message.DateRead = DateTime.UtcNow; 
                 }
-                //save changes to database
-                await _context.SaveChangesAsync();
             }
-
-            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            // Project sepcific query and load the database than loading everything and returning full entity 
+            return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
         public void RemoveConnection(Connection connection)
@@ -126,9 +122,5 @@ namespace API.Data
             _context.Connections.Remove(connection);
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
     }
 }
