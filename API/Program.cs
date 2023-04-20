@@ -17,6 +17,37 @@ builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration); // extend our extension method on application services
 builder.Services.AddIdentityServices(builder.Configuration);
 
+var connString = "";
+if (builder.Environment.IsDevelopment()) 
+//used for app development!
+    connString = builder.Configuration.GetConnectionString("DefaultConnection");
+else 
+{
+// Use connection string provided at runtime by FlyIO.
+        var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+        // Parse connection URL to connection string for Npgsql
+        // by using connection/database url and extract interested information and populate variables below
+        //used for production!
+        connUrl = connUrl.Replace("postgres://", string.Empty);
+        var pgUserPass = connUrl.Split("@")[0];
+        var pgHostPortDb = connUrl.Split("@")[1];
+        var pgHostPort = pgHostPortDb.Split("/")[0];
+        var pgDb = pgHostPortDb.Split("/")[1];
+        var pgUser = pgUserPass.Split(":")[0];
+        var pgPass = pgUserPass.Split(":")[1];
+        var pgHost = pgHostPort.Split(":")[0];
+        var pgPort = pgHostPort.Split(":")[1];
+	// var updatedHost = pgHost.Replace(“flycast”, “internal”);
+
+        // create actual connection string from this using sever, port, user ID syntax used inside configuration earlier
+        connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+}
+builder.Services.AddDbContext<DataContext>(opt =>
+{
+    opt.UseNpgsql(connString);
+});
+
 var app = builder.Build();
 
 // Middleware:
@@ -44,11 +75,16 @@ app.UseCors(builder => builder
 app.UseAuthentication(); // Ask if users have valid token
 app.UseAuthorization(); // Even if valid, there are rules for authorization  to go to the Authorize endpoint
 
+app.UseDefaultFiles(); // fish out index.html from wwwroot output folder by default(index.htm or index.html)
+app.UseStaticFiles(); // look for wwwroot folder output and serve content from inside there.
+
 app.MapControllers();
 
 //create endpoint/route to enable client to find the hub connection
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
+
+app.MapFallbackToController("Index", "Fallback");// specify action in ctronller and the part of  the name of the controller
 
 // allow access to all services included inside program class.
 // To automatically apply Seed class to data in application
@@ -66,7 +102,7 @@ try
     // Just dropdatabase and restart API to reset everything (clena slate data).
     await context.Database.MigrateAsync();
     // clear connections out when restart application. 
-    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    await Seed.ClearConnections(context);
     await Seed.SeedUsers(userManager, roleManager); 
 }
 catch (Exception ex) 

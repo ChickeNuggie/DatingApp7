@@ -5,8 +5,9 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { delay, finalize, Observable } from 'rxjs';
+import { delay, finalize, identity, Observable } from 'rxjs';
 import { BusyService } from '../_services/busy.service';
+import { environment } from 'src/environments/environment';
 
 // Intercept to determine when http request is sent and coming back.
 @Injectable()
@@ -18,7 +19,7 @@ export class LoadingInterceptor implements HttpInterceptor {
     this.busyService.busy(); // increase busy count of http request when is ongoing
 
     return next.handle(request).pipe(
-      delay(1000),
+      (environment.production ? identity : delay(1000)), // replace null with identity thaat returns nothing.
       finalize(() => {
         this.busyService.idle() // turn off spinner once request has been completed
       }) 

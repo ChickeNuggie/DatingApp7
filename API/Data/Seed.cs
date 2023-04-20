@@ -9,7 +9,15 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Data
 {
     public class Seed 
-    {   // access class method instantly 'Seed.SeedUser' without creating new instance 'var seed = new Seed();'
+    {   
+        public static async Task ClearConnections(DataContext context)
+        {
+            context.Connections.RemoveRange(context.Connections);
+            await context.SaveChangesAsync();
+        }
+        
+        
+        // access class method instantly 'Seed.SeedUser' without creating new instance 'var seed = new Seed();'
         public static async Task SeedUsers(UserManager<AppUser> userManager, 
             RoleManager<AppRole> roleManager) 
         {
@@ -42,6 +50,9 @@ namespace API.Data
             {
 
                 user.UserName = user.UserName.ToLower(); // for comparing users to users to be consistent
+                //specify UTC date time in postgres database
+                user.Created = DateTime.SpecifyKind(user.Created, DateTimeKind.Utc);
+                user.LastActive = DateTime.SpecifyKind(user.LastActive, DateTimeKind.Utc);
                 //It will create and save changes in database
                 await userManager.CreateAsync(user, "Pa$$w0rd");
                 await userManager.AddToRoleAsync(user, "Member");
