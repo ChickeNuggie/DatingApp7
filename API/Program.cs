@@ -38,7 +38,7 @@ else
         var pgPass = pgUserPass.Split(":")[1];
         var pgHost = pgHostPort.Split(":")[0];
         var pgPort = pgHostPort.Split(":")[1];
-	// var updatedHost = pgHost.Replace(“flycast”, “internal”);
+	    var updatedHost = pgHost.Replace("flycast", "internal");
 
         // create actual connection string from this using sever, port, user ID syntax used inside configuration earlier
         connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
