@@ -41,8 +41,8 @@ else
 	    var updatedHost = pgHost.Replace("flycast", "internal");
 
         // create actual connection string from this using sever, port, user ID syntax used inside configuration earlier
-        connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
-}
+        connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+}   
 builder.Services.AddDbContext<DataContext>(opt =>
 {
     opt.UseNpgsql(connString);
