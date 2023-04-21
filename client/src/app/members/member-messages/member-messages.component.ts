@@ -26,10 +26,10 @@ export class MemberMessagesComponent implements OnInit {
   sendMessage() {
     if (!this.username) return; // ensure username exists before sending message.
     //use then instead of subscribe when returning a promise from invoke method.
-    // this.loading = true;
+    this.loading = true;
     this.messageService.sendMessage(this.username, this.messageContent).then(() => {
       this.messageForm?.reset();
-      })
+      }).finally(() => this.loading = false); //turn off loading flag.
   }
 
 

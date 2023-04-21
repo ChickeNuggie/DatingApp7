@@ -7,6 +7,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Group } from '../modals/group';
+import { BusyService } from './busy.service';
 
 // Connector to database. (code from library)
 @Injectable({
@@ -21,10 +22,14 @@ export class MessageService {
 
   //Only connects when inside messages tab of the member-detail component,
   //So that users only get private messaging between two users and not application wide.
-  constructor(private http: HttpClient) { }
+  //busyservice to get ahold of loading spinner.
+  constructor(private http: HttpClient, private busyService: BusyService) { }
 
   
-  createHubConnection(user: User, otherUsername: string) {
+  createHubConnection(user: User, otherUsername: string) { 
+    //used to indicate that the current instance is busy and should not be accessed or modified until the busy state has been cleared.
+    this.busyService.busy();
+    
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
         accessTokenFactory: () => user.token // authenticate this particular messagehub as well from users, require to add authorize in messagehub in order to allow authentication.
@@ -32,7 +37,11 @@ export class MessageService {
       .withAutomaticReconnect()
       .build();
 
-      this.hubConnection.start().catch(error => console.log(error)); 
+      //after start and catch connection, provide loading message in between connection.
+      this.hubConnection.start()
+        .catch(error => console.log(error))
+        //provide loading spinner when initially load messages.
+        .finally(() => this.busyService.idle()); 
   
       //create observable that's going to store these messages so we can subscribe to them inside our component.  
       this.hubConnection.on('ReceiveMessageThread', messages => {
@@ -75,8 +84,10 @@ export class MessageService {
     }
 
     stopHubConnection() {
-      //defensive programming: stop connection when hubconnection exists/connected.
+      //defensive programming: stop connection when hubconnection exists/connected. 
+      //clear out content if the message when user moves away from connection. (won't display previous message)
       if (this.hubConnection) {
+        this.messageThreadSource.next([]); //reset back to empty array  
         this.hubConnection?.stop();
       }
 
