@@ -19,7 +19,7 @@ export class PhotoManagementComponent implements OnInit {
 
   getPhotosForApproval() 
   {
-  //adminservice =  retrieve the photos, which likely communicates with a backend API. 
+  //adminservice =  retrieve the photos, which likely communicates with a backend API. 11
   //The subscribe() method is called on the observable returned by adminService.getPhotosForApproval()
   //which allows the function to handle the asynchronous response when the photos are retrieved.
   //When the photos are successfully retrieved, the next callback function is executed, which sets the this.photos property to the array of photos that were returned by the service
