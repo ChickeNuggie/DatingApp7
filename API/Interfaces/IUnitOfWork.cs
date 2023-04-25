@@ -4,9 +4,10 @@ namespace API.Interfaces
 //i.e. if one repo update fail, all repo update fails.
     public interface IUnitOfWork
     {
-        IUserRepository UserRepository {get;}
-        IMessageRepository MessageRepository {get;}
-        ILikesRepository LikesRepository {get;}
+        IUserRepository UserRepository { get; }
+        IMessageRepository MessageRepository { get; }
+        ILikesRepository LikesRepository { get; }
+        IPhotoRepository PhotoRepository { get; }
         Task<bool> Complete(); // equivalent to save aync method.
         bool HasChanges(); // inform us if entity framework is tracking any changes inside its transaction.
     }

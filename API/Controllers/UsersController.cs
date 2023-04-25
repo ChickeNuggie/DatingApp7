@@ -76,7 +76,7 @@ namespace API.Controllers
         }
 
 
-        [HttpGet("{username}")] // Spcify username of the User to Get correct user database from the repository
+        [HttpGet("{username}", Name = "GetUser")] // Spcify username of the User to Get correct user database from the repository
         public async Task<ActionResult<MemberDto>> GetUser(string username) // asynchronous code
         {
 
@@ -85,8 +85,10 @@ namespace API.Controllers
 
          // asynchronous code allows to get other queries than from incoming request from web sever (no await) and isn't blocked whilist waiting for current query on database to return.
         // may add abit mild extra noise to the code.
-
-         return  await _uow.UserRepository.GetMemberAsync(username);
+         var currentUsername = User.GetUsername();
+         //boolean value based on whether the current user matches the username being queried. If the current user is querying their own profile, the isCurrentUser parameter will be set to true.
+         //Otherwise, it will be set to false.
+         return  await _uow.UserRepository.GetMemberAsync(username, isCurrentUser: currentUsername == username);
 
         }
 
@@ -116,7 +118,7 @@ namespace API.Controllers
         // create extension method to use find username based on claim principal extensions: nameidentifier to use across classess.
          var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
-         if (user == null) return NotFound();
+        //  if (user == null) return NotFound();
 
         // Add photo to cloudinary services using Photoservice class
          var result = await _photoService.AddPhotoAsync(file);
@@ -130,20 +132,20 @@ namespace API.Controllers
             PublicId = result.PublicId
          };
 
-         //Set the uploaded photo to main photo if no photos exist in database.
-         if (user.Photos.Count == 0) photo.IsMain = true;
-        // User entity Framework is now tracking the 'user' list in the memory
          user.Photos.Add(photo);
 
          // if changes is saved to database and is working, return mapping into PhotoDTO from photo
         // Go through request for user (user login) based on their username and get their exact location of newly uploaded url images created on server.
         // This could prevent unauthorized access to individual photos. 
-         if (await _uow.Complete())
+         if (await _uow.Complete()) //returns a boolean value indicating whether the save operation was successful or not.
          {
-            //created uploads upon action tasks above.
+            //creates a "Created" HTTP response that includes a "Location" header containing the URL to retrieve the newly created photo, along with a status code of 201 (Created)
+            // This method is used to create this response, and it specifies the name of a route ("GetUser") that will be used to generate the URL, 
+            // along with any necessary route parameters (in this case, the "username" parameter set to the username of the user associated with the photo).
             //Get User via User api "user/username" to get root value = name of the user.
-            // Map from created parameter photo and pass back to PhotoDto
-            return CreatedAtAction(nameof(GetUser), new {username = user.UserName}, _mapper.Map<PhotoDto>(photo));
+            // Map from created parameter photo and pass back to PhotoDto (used to convert the photo object to a "PhotoDto" object, a simplified version of the photo object intended for use in the HTTP response)
+            return CreatedAtRoute("GetUser", new { username = user.UserName}, _mapper.Map<PhotoDto>(photo) );
+            //Overall, this code is creating a "Created" response with a location header pointing to the newly created photo if the save operation was successful.
          }
 
          return BadRequest("Problem adding photo.");
@@ -178,7 +180,7 @@ namespace API.Controllers
         {
             var user = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
-            var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            var photo = await _uow.PhotoRepository.GetPhotoById(photoId);
 
             if (photo == null) return NotFound();
 

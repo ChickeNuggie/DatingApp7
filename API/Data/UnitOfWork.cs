@@ -3,6 +3,7 @@ using AutoMapper;
 
 namespace API.Data
 {//inject unit of work into controllers than respective respositories.
+//allow changes applied to all repositories simulteanously to avoid messy or unwwanted updates.
     public class UnitOfWork : IUnitOfWork
     {
         private readonly DataContext _context;
@@ -17,6 +18,8 @@ namespace API.Data
         public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
 
         public ILikesRepository LikesRepository => new LikesRepository(_context);
+
+        public IPhotoRepository PhotoRepository => new PhotoRepository(_context);
 
         public async Task<bool> Complete()
         {

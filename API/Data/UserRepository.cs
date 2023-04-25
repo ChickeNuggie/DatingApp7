@@ -19,15 +19,24 @@ namespace API.Data
             _mapper = mapper;
         }
 
-        public async Task<MemberDto> GetMemberAsync(string username)
+        public async Task<MemberDto> GetMemberAsync(string username, bool isCurrentUser)
         {
-            return await _context.Users
+            var query = _context.Users
             .Where(x => x.UserName == username)
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             //project onto memberDto and specify configuration to find mapping profiles which it gets
             // from service that added to application service
-            .SingleOrDefaultAsync();
+            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             
+            // It provides deferred execution and allows for the creation of complex queries that can be translated into SQL or other query languages.
+            //avoid retrieving unnecessary data and improve performance.
+            //It creates a new IQueryable object that allows for more efficient querying of the underlying data source.
+            .AsQueryable();
+            //if is current user,ignore query filters where it returns approved photos. (let to use see unapproved own photos)
+            if(isCurrentUser) query = query.IgnoreQueryFilters();
+            //find the first item in a list of items that meets a certain condition
+            //await keyword is used to make sure that the program waits for this method to finish before continuing.
+            return await query.FirstOrDefaultAsync(); //first
+
         } 
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
@@ -69,6 +78,15 @@ namespace API.Data
         public  async Task<AppUser> GetUserByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<AppUser> GetUserByPhotoId(int photoId)
+        {
+            return await _context.Users // access user's database
+                .Include(p => p.Photos) // show related photos data
+                .IgnoreQueryFilters() // ignore query on unapproved photos
+                .Where(p => p.Photos.Any(p => p.Id == photoId)) // where any photos id matches the parameter.
+                .FirstOrDefaultAsync(); //returns first element.
         }
 
         public async Task<AppUser> GetUserByUsernameAsync(string username)

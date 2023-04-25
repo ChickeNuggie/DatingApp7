@@ -11,6 +11,7 @@ namespace API.Entities
 
         public bool IsMain { get; set; }
 
+        public bool IsApproved { get; set; }
         public string PublicId { get; set; } //store photos in uniqe public ID
 
         //To fully define relationship in the table, ensure AppUserId and its AppUser property is included,

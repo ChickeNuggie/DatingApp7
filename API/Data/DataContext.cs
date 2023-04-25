@@ -26,6 +26,7 @@ namespace API.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Connection> Connections { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         //Configure database context. (tables)
         protected override void OnModelCreating(ModelBuilder builder)
@@ -72,6 +73,14 @@ namespace API.Data
             .WithMany(m => m.MessagesSent)
             .OnDelete(DeleteBehavior.Restrict); // prevent deletion from sender to allow recipient to view messages
 
+            //Query filter to only return approved photos.
+            //This means that the filter will be applied to all queries that retrieve instances of the Photo entity.
+            // only photos that have the IsApproved property set to true should be included in the results of any query that retrieves instances of the Photo entity.
+            // ensure that only approved photos are ever retrieved from the database, without having to manually add the IsApproved condition to every query that retrieves photos.
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
+            
+            // builder.ApplyUtcDateTimeConverter();
+            
         }
     }
 }
