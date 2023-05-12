@@ -48,7 +48,7 @@ namespace API.Data
             //Generate password for each users.
             foreach (var user in users)
             {
-
+                user.Photos.First().IsApproved = true;
                 user.UserName = user.UserName.ToLower(); // for comparing users to users to be consistent
                 //specify UTC date time in postgres database
                 user.Created = DateTime.SpecifyKind(user.Created, DateTimeKind.Utc);
@@ -56,7 +56,6 @@ namespace API.Data
                 //It will create and save changes in database
                 await userManager.CreateAsync(user, "Pa$$w0rd");
                 await userManager.AddToRoleAsync(user, "Member");
-
             }
 
             //Note: To automatically apply seed to data in application, best to apply when application 'Program.cs' start up (entry point of application)  
@@ -69,19 +68,8 @@ namespace API.Data
             await userManager.CreateAsync(admin, "Pa$$w0rd");
             // add user to multiple multiple roles
             await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"}); 
-        
-            //set initial photos to approved for each seed users
-            foreach (var user in users)
-            {
-                user.Photos.First().IsApproved = true;
-                user.UserName = user.UserName.ToLower();// for comparing users to users to be consistent
-                //It will create and save changes in database
-                //create a new user in the database with the provided user object and the password "Pa$$w0rd" (part of an authentication and authorization system that handles user registration and login.)
-                await userManager.CreateAsync(user, "Pa$$w0rd"); 
-                // adding the user object to the "member" role in the authorization system(assumes that the userManager object is also responsible for managing user roles.)
-                await userManager.AddToRoleAsync(user, "member");
-                
-            }
+
          }
     }
 }
+
